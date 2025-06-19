@@ -42,7 +42,6 @@ const App = () => {
         throw new Error("Failed to fetch movies");
       }
       const data = await response.json();
-      console.log(data);
       if (data.response === "false") {
         setErrorMessage(data.Error || `Failed to fetch movies`);
         setMovieList([]);
@@ -55,7 +54,7 @@ const App = () => {
     }
 
     } catch (error) {
-      console.log(`Error fetching movies: ${error}`);
+      console.error(`Error fetching movies: ${error}`);
       setErrorMessage(`Error fetching movies. Please try again later.`);
     } finally {
       setIsLoading(false);
@@ -73,13 +72,11 @@ const App = () => {
   }
 
   useEffect(() => {
-    console.log(debouncedSearchTerm);
     fetchMovies(debouncedSearchTerm);
   }, [debouncedSearchTerm]);
 
   useEffect(()=>{
     loadTrendingMovies();
-    console.log(trendingMovies);
   },[])
 
   return (
