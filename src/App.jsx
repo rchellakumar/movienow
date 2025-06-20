@@ -5,6 +5,8 @@ import React, { useEffect, useState } from "react";
 import {useDebounce} from 'react-use';
 import { getTrendingMovies, updateSearchCount } from "./appwrite";
 
+import toast,{Toaster} from "react-hot-toast";
+
 const API_BASE_URL = "https://api.themoviedb.org/3";
 
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
@@ -78,9 +80,25 @@ const App = () => {
   useEffect(()=>{
     loadTrendingMovies();
   },[])
+  useEffect(() => {
+  if (errorMessage) {
+    toast.error(errorMessage);
+  }
+}, [errorMessage]);
 
   return (
     <div className="pattern">
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: "#333",
+            color: "#fff",
+          },
+        }}
+      />
+
       <div className="wrapper">
         <header>
           <img src="./hero.png" alt="hero banner" />
@@ -91,21 +109,21 @@ const App = () => {
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </header>
 
-          {trendingMovies.length > 0 && (
-            <section className="trending">
-              <h2>Trending Movies</h2>
-              <ul>
-                {trendingMovies.map((movie,index)=>{
-                   return (
-                    <li key={movie.$id}>
-                       <p>{index + 1}</p>
-                       <img src={movie.poster_url} alt={movie.title} />
-                    </li>
-                   )
-                })}
-              </ul>
-            </section>
-          )}
+        {trendingMovies.length > 0 && (
+          <section className="trending">
+            <h2>Trending Movies</h2>
+            <ul>
+              {trendingMovies.map((movie, index) => {
+                return (
+                  <li key={movie.$id}>
+                    <p>{index + 1}</p>
+                    <img src={movie.poster_url} alt={movie.title} />
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        )}
 
         <section className="all-movies">
           <h2>All Movies</h2>
@@ -116,9 +134,7 @@ const App = () => {
           ) : (
             <ul>
               {movieList.map((movie) => {
-                return (
-                  <MovieCard key={movie.id} movie={movie} />
-                );
+                return <MovieCard key={movie.id} movie={movie} />;
               })}
             </ul>
           )}
