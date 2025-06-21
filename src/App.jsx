@@ -2,44 +2,34 @@ import MovieCard from "@components/MovieCard";
 import Search from "@components/search";
 import Spinner from "@components/Spinner";
 import React, { useEffect, useState } from "react";
-import {useDebounce} from 'react-use';
+import { useDebounce } from "react-use";
 import { getTrendingMovies, updateSearchCount } from "./appwrite";
 
-import toast,{Toaster} from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 
-const API_BASE_URL = "https://api.themoviedb.org/3";
-
-const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
-
-const API_OPTIONS = {
-  method: "GET",
-  headers: {
-    accept: "application/json",
-    Authorization: `Bearer ${API_KEY}`,
-  },
-};
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const App = () => {
-  const [debouncedSearchTerm,setDebouncedSearchTerm]=useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  
+
   const [movieList, setMovieList] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  
-  const [trendingMovies,setTrendingMovies]=useState([]);
 
-  useDebounce(()=>setDebouncedSearchTerm(searchTerm),500,[searchTerm])
+  const [trendingMovies, setTrendingMovies] = useState([]);
 
-  const fetchMovies = async (query='') => {
+  useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm]);
+
+  const fetchMovies = async (query = "") => {
     setIsLoading(true);
     setErrorMessage("");
     try {
       const endpoint = query
-        ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
-        : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
+        ? `${API_BASE_URL}/api/movies?query=${encodeURIComponent(query)}`
+        : `${API_BASE_URL}/api/movies`;
 
-      const response = await fetch(endpoint, API_OPTIONS);
+      const response = await fetch(endpoint);
       if (!response.ok) {
         throw new Error("Failed to fetch movies");
       }
@@ -51,10 +41,9 @@ const App = () => {
       }
       setMovieList(data.results || []);
 
-    if (query && data.results.length > 0) {
-      await updateSearchCount(query, data.results[0]);
-    }
-
+      if (query && data.results.length > 0) {
+        await updateSearchCount(query, data.results[0]);
+      }
     } catch (error) {
       console.error(`Error fetching movies: ${error}`);
       setErrorMessage(`Error fetching movies. Please try again later.`);
@@ -63,28 +52,27 @@ const App = () => {
     }
   };
 
-  const loadTrendingMovies= async ()=>{
+  const loadTrendingMovies = async () => {
     try {
-      const movies= await getTrendingMovies();
+      const movies = await getTrendingMovies();
       setTrendingMovies(movies);
-
     } catch (error) {
       console.error(`Error fetching trending movies: ${error}`);
     }
-  }
+  };
 
   useEffect(() => {
     fetchMovies(debouncedSearchTerm);
   }, [debouncedSearchTerm]);
 
-  useEffect(()=>{
-    loadTrendingMovies();
-  },[])
   useEffect(() => {
-  if (errorMessage) {
-    toast.error(errorMessage);
-  }
-}, [errorMessage]);
+    loadTrendingMovies();
+  }, []);
+  useEffect(() => {
+    if (errorMessage) {
+      toast.error(errorMessage);
+    }
+  }, [errorMessage]);
 
   return (
     <div className="pattern">

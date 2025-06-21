@@ -1,6 +1,5 @@
 import { Client, Databases, ID, Query } from 'appwrite';
 import toast from 'react-hot-toast';
-// or your preferred toast library
 
 
 const PROJECT_ID = import.meta.env.VITE_APPWRITE_PROJECT_ID;
@@ -29,7 +28,7 @@ export const updateSearchCount = async (searchTerm, movie) => {
         searchTerm,
         count: 1,
         movie_id: movie.id,
-        poster_url: `https://image.tmdb.org/t/p/w500/${movie.poster_path}`,
+        poster_url: `http://localhost:5000/api/image/${movie.poster_path.replace(/^\//, '')}`,
       });
     }
   } catch (error) {
