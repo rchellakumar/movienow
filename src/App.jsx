@@ -27,15 +27,19 @@ const App = () => {
     try {
       const endpoint = query
         ? `${API_BASE_URL}/api/movies?query=${encodeURIComponent(query)}`
-        : `${API_BASE_URL}/api/movies`;
-
-      const response = await fetch(endpoint);
+        : `http://localhost:5000/api/movies`;
+      console.log(endpoint);
+      const response = await fetch(endpoint, {
+        headers: {
+          "x-api-key": "KDNA356KDBDD564",
+        },
+      });
       if (!response.ok) {
         throw new Error("Failed to fetch movies");
       }
       const data = await response.json();
       if (data.response === "false") {
-        setErrorMessage(data.Error || `Failed to fetch movies`);
+        setErrorMessage(data.Error || `Failed to fetch movies!`);
         setMovieList([]);
         return;
       }

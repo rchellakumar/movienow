@@ -2,7 +2,7 @@ import React from 'react'
 
 const MovieCard = ({movie: {title,vote_average,poster_path,release_date,original_language} }) => {
     const imageUrl = poster_path
-    ? `http://localhost:5000/api/image/${poster_path.replace(/^\//, '')}`
+    ? `https://movieproxy-production.up.railway.app/api/image/${poster_path.replace(/^\//, '')}`
     : '/no-poster.png';
   return (
     <div className='movie-card'>
