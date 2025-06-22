@@ -28,7 +28,7 @@ export const updateSearchCount = async (searchTerm, movie) => {
         searchTerm,
         count: 1,
         movie_id: movie.id,
-        poster_url: `https://image.tmdb.org/t/p/w500/api/image/${movie.poster_path.replace(/^\//, '')}`,
+        poster_url: `https://image.tmdb.org/t/p/w500/${movie.poster_path.replace(/^\//, '')}`,
       });
     }
   } catch (error) {
