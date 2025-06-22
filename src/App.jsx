@@ -29,6 +29,7 @@ const App = () => {
 
       if (!apiKey) {
         alert("All API keys exhausted. Please wait for reset.");
+        setErrorMessage("All API keys exhausted. Please wait for reset.")
         return;
       }
     try {
