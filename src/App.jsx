@@ -4,6 +4,7 @@ import Spinner from "@components/Spinner";
 import React, { useEffect, useState } from "react";
 import { useDebounce } from "react-use";
 import { getTrendingMovies, updateSearchCount } from "./appwrite";
+import { getAvailableApiKey } from "@utils/apiKeyManager";
 
 import toast, { Toaster } from "react-hot-toast";
 
@@ -24,14 +25,20 @@ const App = () => {
   const fetchMovies = async (query = "") => {
     setIsLoading(true);
     setErrorMessage("");
+      const apiKey = getAvailableApiKey();
+
+      if (!apiKey) {
+        alert("All API keys exhausted. Please wait for reset.");
+        return;
+      }
     try {
       const endpoint = query
         ? `${API_BASE_URL}/api/movies?query=${encodeURIComponent(query)}`
-        : `http://localhost:5000/api/movies`;
+        : `${API_BASE_URL}/api/movies`;
       console.log(endpoint);
       const response = await fetch(endpoint, {
         headers: {
-          "x-api-key": "KDNA356KDBDD564",
+          "x-api-key": apiKey,
         },
       });
       if (!response.ok) {
