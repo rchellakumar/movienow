@@ -4,7 +4,7 @@ import Spinner from "@components/Spinner";
 import React, { useEffect, useState } from "react";
 import { useDebounce } from "react-use";
 import { getTrendingMovies, updateSearchCount } from "./appwrite";
-import { getAvailableApiKey } from "@utils/apiKeyManager";
+
 
 import toast, { Toaster } from "react-hot-toast";
 
@@ -25,7 +25,7 @@ const App = () => {
   const fetchMovies = async (query = "") => {
     setIsLoading(true);
     setErrorMessage("");
-      const apiKey = getAvailableApiKey();
+      const apiKey = import.meta.env.VITE_TMDB_API_KEY;
 
       if (!apiKey) {
         alert("All API keys exhausted. Please wait for reset.");
@@ -34,12 +34,13 @@ const App = () => {
       }
     try {
       const endpoint = query
-        ? `${API_BASE_URL}/api/movies?query=${encodeURIComponent(query)}`
-        : `${API_BASE_URL}/api/movies`;
-      console.log(endpoint);
+        ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
+        : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
+      // console.log(endpoint);
       const response = await fetch(endpoint, {
         headers: {
-          "x-api-key": apiKey,
+          accept: "application/json",
+          Authorization: `Bearer ${apiKey}`,
         },
       });
       if (!response.ok) {
@@ -58,7 +59,9 @@ const App = () => {
       }
     } catch (error) {
       console.error(`Error fetching movies: ${error}`);
-      setErrorMessage(`Error fetching movies. Please try again later.`);
+      setErrorMessage(
+        `Error fetching movies. TMDB may be blocked in your region (like India). Try using a VPN.`
+      );
     } finally {
       setIsLoading(false);
     }
@@ -82,7 +85,7 @@ const App = () => {
   }, []);
   useEffect(() => {
     if (errorMessage) {
-      toast.error(errorMessage);
+      toast.error(errorMessage,{duration:7000});
     }
   }, [errorMessage]);
 
